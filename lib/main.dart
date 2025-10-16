@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 void main() {
   runApp(const MyApp());
 }
@@ -30,47 +28,6 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class ImageSwitcher extends StatefulWidget {
-  @override
-  _ImageSwitcherState createState() => _ImageSwitcherState();
-}
-
-class _ImageSwitcherState extends State<ImageSwitcher> {
-  // список картинок
-  final List<String> _images = [
-    'lib/assets/images/C.png',
-    'lib/assets/images/java.png',
-    'lib/assets/images/kotlin.png',
-    'lib/assets/images/python.png',
-  ];
-
-  int _currentIndex = 0;
-
-  void _nextImage() {
-    setState(() {
-      // если последний — возвращаемся к первому
-      _currentIndex = (_currentIndex + 1) % _images.length;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Image.asset(
-          _images[_currentIndex],
-          width: 200,
-          height: 150,
-        ),
-        ElevatedButton(
-          onPressed: _nextImage,
-          child: Text('Следующая картинка'),
-        ),
-      ],
-    );
-  }
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
@@ -78,6 +35,58 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
+  }
+
+  // Список изображений для горизонтального ListView
+  final List<String> _images = [
+    'lib/assets/images/C.png',
+    'lib/assets/images/java.png',
+    'lib/assets/images/kotlin.png',
+    'lib/assets/images/python.png',
+  ];
+
+  // Список пунктов для вертикального ListView
+  final List<Map<String, dynamic>> _menuItems = [
+    {
+      'title': 'Java',
+      'description': 'Объектно-ориентированный язык программирования',
+      'icon': Icons.code,
+      'trailingIcon': Icons.arrow_forward_ios,
+    },
+    {
+      'title': 'Kotlin',
+      'description': 'Современный язык для Android разработки',
+      'icon': Icons.android,
+      'trailingIcon': Icons.arrow_forward_ios,
+    },
+    {
+      'title': 'C++',
+      'description': 'Язык программирования для системного программирования',
+      'icon': Icons.computer,
+      'trailingIcon': Icons.arrow_forward_ios,
+    },
+    {
+      'title': 'Python',
+      'description': 'Высокоуровневый язык с простым синтаксисом',
+      'icon': Icons.psychology,
+      'trailingIcon': Icons.arrow_forward_ios,
+    },
+    {
+      'title': 'Dart',
+      'description': 'Язык для создания кроссплатформенных приложений',
+      'icon': Icons.flutter_dash,
+      'trailingIcon': Icons.arrow_forward_ios,
+    },
+  ];
+
+  void _showSnackBar(BuildContext context, String title) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Вы выбрали: $title'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -90,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Название ЯП
             const Text(
@@ -107,48 +116,79 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 16),
 
-            // 3. Картинка + 4 наименования
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Используем ImageSwitcher вместо статичной картинки
-                ImageSwitcher(),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Text("Java"),
-                    SizedBox(height: 8),
-                    Text("Kotlin"),
-                    SizedBox(height: 8),
-                    Text("C++"),
-                    SizedBox(height: 8),
-                    Text("Python"),
-                  ],
-                ),
-              ],
+            // 3. Горизонтальный ListView с изображениями со скругленными углами
+            Text(
+              'Языки программирования:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _images.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 12),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16.0),
+                      child: Image.asset(
+                        _images[index],
+                        width: 150,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
             const SizedBox(height: 16),
 
             // 4. Аватарка пользователя + текст
             Row(
               children: [
-                Icon(Icons.account_circle_sharp, color: Colors.purple),
+                Icon(Icons.account_circle_sharp, color: Colors.purple, size: 40),
                 const SizedBox(width: 12),
-                const Text(
-                  "Малаев Илья Александрович ИКБО-35-22",
-                  style: TextStyle(fontSize: 16),
+                const Expanded(
+                  child: Text(
+                    "Малаев Илья Александрович ИКБО-35-22",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ],
             ),
-
-            // Добавляем счетчик для демонстрации
             const SizedBox(height: 16),
+
+            // 5. Вертикальный ListView с карточками
             Text(
-              'Счетчик: $_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'Меню:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _menuItems.length,
+                itemBuilder: (context, index) {
+                  final item = _menuItems[index];
+                  return Card(
+                    elevation: 2,
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    child: ListTile(
+                      leading: Icon(item['icon'], color: Colors.deepPurple),
+                      title: Text(
+                        item['title'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(item['description']),
+                      trailing: Icon(item['trailingIcon'], size: 16),
+                      onTap: () {
+                        _showSnackBar(context, item['title']);
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
