@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -28,12 +30,52 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class ImageSwitcher extends StatefulWidget {
+  @override
+  _ImageSwitcherState createState() => _ImageSwitcherState();
+}
+
+class _ImageSwitcherState extends State<ImageSwitcher> {
+  // список картинок
+  final List<String> _images = [
+    'lib/assets/images/C.png',
+    'lib/assets/images/java.png',
+    'lib/assets/images/kotlin.png',
+    'lib/assets/images/python.png',
+  ];
+
+  int _currentIndex = 0;
+
+  void _nextImage() {
+    setState(() {
+      // если последний — возвращаемся к первому
+      _currentIndex = (_currentIndex + 1) % _images.length;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset(
+          _images[_currentIndex],
+          width: 200,
+          height: 150,
+        ),
+        ElevatedButton(
+          onPressed: _nextImage,
+          child: Text('Следующая картинка'),
+        ),
+      ],
+    );
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
-
       _counter++;
     });
   }
@@ -70,11 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.network(
-                  'https://blog.sosafeapp.com/content/images/size/w2000/2020/04/blog---mi-primera-app-en-Kotlin.png',
-                  width: 200,
-                  height: 150,
-                ),
+                // Используем ImageSwitcher вместо статичной картинки
+                ImageSwitcher(),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,10 +143,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+
+            // Добавляем счетчик для демонстрации
+            const SizedBox(height: 16),
+            Text(
+              'Счетчик: $_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
           ],
         ),
       ),
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
